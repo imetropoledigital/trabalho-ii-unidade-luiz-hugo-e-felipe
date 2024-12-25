@@ -1,8 +1,8 @@
 import { MongoConnection } from "./infra/databases/mongodb/MongoConnection"
-import { ObjectId } from "mongodb";
+import { ObjectId, WithoutId } from "mongodb";
 
 export const ApiService = {
-  insertDocument: async ({document, collection} :{document: Object, collection: string}) => {
+  insertDocument: async ({document, collection} :{document: WithoutId<Document>, collection: string}) => {
     const connection = await MongoConnection.getInstance();
 
     try {
@@ -37,5 +37,16 @@ export const ApiService = {
       console.error("Error reading document by id:", error);
       throw error;
     }     
+  },
+
+  updateDocumentById: async ({id, document, collection} : {id: string, document: WithoutId<Document>, collection: string}) => {
+    const connection = await MongoConnection.getInstance();
+    try {
+      const objectId = new ObjectId(id);
+      return await connection.collection(collection).findOneAndReplace({"_id": objectId}, document, {returnDocument: "after"});
+    } catch (error) {
+      console.error("Error updating document by id:", error);
+      throw error;
+    }       
   }
 }

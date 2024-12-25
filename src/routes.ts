@@ -8,4 +8,6 @@ router.post('/:collection', (req: Request, res: Response) => {ApiController.inse
 router.get('/:collection', (req: Request, res: Response) => { ApiController.findFromCollection(req, res);});
 router.get('/:collection/:id', (req: Request, res: Response) => { ApiController.findByIdFromCollection(req, res); })
 
+router.put('/:collection/:id', (req: Request, res: Response) => { ApiController.updateDocumentById(req, res);})
+
 export {router};
