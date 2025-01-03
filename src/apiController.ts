@@ -29,11 +29,13 @@ export const ApiController = {
     try {
       const {collection} = req.params;
       const findQuery = req.query.query ? JSON.parse(req.query.query as string) : {};
-      
+      const fieldsInText = req.query.fields || '';
+      const projection = ApiService.convertTextToProjection(String(fieldsInText));
+
       if (typeof findQuery != 'object' || Array.isArray(findQuery))
         return res.status(400).send("É obrigatório que a consulta esteja no formato de um JSON");
 
-      const documents = await ApiService.findDocuments({collection , filters: findQuery});
+      const documents = await ApiService.findDocuments({collection , filters: findQuery, projection});
       return res.status(200).send(documents);
     } catch (error: any) {
       if (error instanceof Error) return res.status(500).json({ message: error.message })       

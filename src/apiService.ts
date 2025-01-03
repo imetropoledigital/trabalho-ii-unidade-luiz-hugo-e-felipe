@@ -1,5 +1,6 @@
 import { MongoConnection } from "./infra/databases/mongodb/MongoConnection"
 import { ObjectId, WithoutId } from "mongodb";
+import { MongoProjection } from "./types/mongoProjection";
 
 export const ApiService = {
   insertDocument: async ({document, collection} :{document: WithoutId<Document>, collection: string}) => {
@@ -19,11 +20,11 @@ export const ApiService = {
     }
   },
   
-  findDocuments: async ({collection, filters}:{collection: string, filters: Object}) => {
+  findDocuments: async ({collection, filters, projection}:{collection: string, filters: Object, projection: MongoProjection}) => {
     const connection = await MongoConnection.getInstance();
 
     try {
-      return await connection.collection(collection).find(filters).toArray();
+      return await connection.collection(collection).find(filters).project(projection).toArray();
     } catch (error) {
       console.error("Error reading documents:", error);
       throw error;
@@ -48,5 +49,18 @@ export const ApiService = {
       console.error("Error updating document by id:", error);
       throw error;
     }       
+  },
+
+  convertTextToProjection: (text: string) : MongoProjection => {
+    const fields = text.split(',').map(txt => txt.trim()).filter(txt => txt !== null && txt.length > 0); // Separa por vírgula removendo os espaços
+    const projection: MongoProjection = fields.reduce((acumulatedObject: MongoProjection, field: string) => {
+      if(field.startsWith('-')) 
+        acumulatedObject[field.substring(1)] = 0;
+      else acumulatedObject[field] = 1;
+      
+      return acumulatedObject;
+    }, {} as MongoProjection);
+
+    return projection;
   }
 }
