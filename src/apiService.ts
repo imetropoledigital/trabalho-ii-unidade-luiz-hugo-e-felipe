@@ -19,11 +19,17 @@ export const ApiService = {
     }
   },
   
-  findDocuments: async ({collection, filters}:{collection: string, filters: Object}) => {
+  findDocuments: async ({collection, filters, fields}:{collection: string, filters: Object, fields: string[]}) => {
     const connection = await MongoConnection.getInstance();
 
+    const projection = fields.reduce((acc, field) => {
+      acc[field] = 1;
+      return acc;
+    }, { _id: 0 });
+    
+
     try {
-      return await connection.collection(collection).find(filters).toArray();
+      return await connection.collection(collection).find(filters, { projection: projection}).toArray();
     } catch (error) {
       console.error("Error reading documents:", error);
       throw error;

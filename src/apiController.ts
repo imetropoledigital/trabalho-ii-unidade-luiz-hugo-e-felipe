@@ -4,9 +4,9 @@ import { ApiService } from "./apiService";
 /**
  * TODO:
  * ROTA DE GET BY ID (CHECK)
- * IMPLEMENTAR PAGINAÇÃO
- * CRIAR ROTA DE PUT
- * IMPLEMENTAR PROJEÇÃO
+ * IMPLEMENTAR PAGINAÇÃO 
+ * CRIAR ROTA DE PUT (CHECK)
+ * IMPLEMENTAR PROJEÇÃO (CHECK)
  */
 export const ApiController = {
   // POST /{collection_name}
@@ -27,16 +27,29 @@ export const ApiController = {
 
   findFromCollection: async (req: Request, res: Response) => {
     try {
-      const {collection} = req.params;
-      const findQuery = req.query.query ? JSON.parse(req.query.query as string) : {};
+      const { collection } = req.params;
+      const { query, fields } = req.query
+
+      if (!collection) {
+        return res.status(400).send("O parâmetro 'collection' é obrigatório.");
+      }
       
+      const findQuery = query ? JSON.parse(query as string) : {};
+      let findFields = [];
+
+      if(Array.isArray(fields)) {
+        findFields = fields;
+      }else if(fields && typeof fields === 'string') {
+        findFields = fields.split(',');
+      }
+
       if (typeof findQuery != 'object' || Array.isArray(findQuery))
         return res.status(400).send("É obrigatório que a consulta esteja no formato de um JSON");
 
-      const documents = await ApiService.findDocuments({collection , filters: findQuery});
+      const documents = await ApiService.findDocuments({collection , filters: findQuery, fields: findFields});
       return res.status(200).send(documents);
     } catch (error: any) {
-      if (error instanceof Error) return res.status(500).json({ message: error.message })       
+      return res.status(500).json({ message: error.message ?? 'Erro desconhecido' })  
     }
   },
   findByIdFromCollection: async(req: Request, res: Response) => {
