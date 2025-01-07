@@ -1,14 +1,22 @@
-import { MongoConnection } from "./infra/databases/mongodb/MongoConnection"
+import { MongoConnection } from "./infra/databases/mongodb/MongoConnection";
 import { ObjectId, WithoutId } from "mongodb";
 import { MongoProjection } from "./types/mongoProjection";
 
 export const ApiService = {
-  insertDocument: async ({document, collection} :{document: WithoutId<Document>, collection: string}) => {
-    const connection = await MongoConnection.getInstance();
+    insertDocument: async ({
+        document,
+        collection,
+    }: {
+        document: WithoutId<Object>;
+        collection: string;
+    }) => {
+        const connection = await MongoConnection.getInstance();
 
-    try {
-      const result = await connection.collection(collection).insertOne(document);
-      console.log("Document inserted with _id:", result.insertedId);
+        try {
+            const result = await connection
+                .collection(collection)
+                .insertOne(document);
+            console.log("Document inserted with _id:", result.insertedId);
 
       // Adiciona o _id ao documento original e retorna
       const savedDocument = { ...document, _id: result.insertedId };
@@ -20,11 +28,14 @@ export const ApiService = {
     }
   },
   
-  findDocuments: async ({collection, filters, projection}:{collection: string, filters: Object, projection: MongoProjection}) => {
+  findDocuments: async ({ collection, filters, projection, pagination }: { collection: string, filters: Object, projection: MongoProjection, pagination: { skip: number | null; limit: number | null }}) => {
     const connection = await MongoConnection.getInstance();
 
     try {
-      return await connection.collection(collection).find(filters).project(projection).toArray();
+      return await connection.collection(collection).find(filters, {
+        ...(!!pagination?.skip && ({skip: pagination.skip})),// Adiciona campo skip se existir pagination.skip
+        ...(!!pagination?.limit && ({ limit: pagination.limit }))// Adiciona campo limit se existir pagination.limit
+      }).project(projection).toArray();
     } catch (error) {
       console.error("Error reading documents:", error);
       throw error;
@@ -32,6 +43,7 @@ export const ApiService = {
   },
   findDocumentById: async ({id, collection}:{id: string, collection: string}) => {
     const connection = await MongoConnection.getInstance();
+
     try {
       return await connection.collection(collection).findOne({"_id": new ObjectId(id)});
     } catch (error) {
@@ -40,7 +52,7 @@ export const ApiService = {
     }     
   },
 
-  updateDocumentById: async ({id, document, collection} : {id: string, document: WithoutId<Document>, collection: string}) => {
+  updateDocumentById: async ({id, document, collection} : {id: string, document: WithoutId<Object>, collection: string}) => {
     const connection = await MongoConnection.getInstance();
     try {
       const objectId = new ObjectId(id);
