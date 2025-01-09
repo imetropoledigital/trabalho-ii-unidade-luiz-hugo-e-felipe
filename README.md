@@ -1,14 +1,14 @@
-# Gerenciamento de Dados - API com MongoDB
+# Gerenciamento de Dados - API com MongoDB  📂
 
 Este projeto é uma API desenvolvida para gerenciar dados utilizando MongoDB como banco de dados. Ele foi construído com Node.js e inclui configurações para fácil inicialização usando Docker.
 
-## Pré-requisitos
+## Pré-requisitos ✅
 
 - **Node.js** (v16 ou superior, para execução manual)
 - **Docker** (para rodar o projeto completo via contêineres)
 - **npm** (para gerenciar dependências em execução manual)
 
-## Configuração
+## Configuração ⚙️
 
 1. **Clone o repositório**:
 
@@ -34,9 +34,9 @@ Este projeto é uma API desenvolvida para gerenciar dados utilizando MongoDB com
       MONGO_DB_NAME=db
      ```
 
-## Execução do Projeto
+## Execução do Projeto 🚀
 
-### Usando Docker (Recomendado)
+### Usando Docker (Recomendado) 🐳
 
 1. Certifique-se de que o Docker esteja instalado e em execução.
 
@@ -60,7 +60,7 @@ Este projeto é uma API desenvolvida para gerenciar dados utilizando MongoDB com
    docker-compose down
    ```
 
-### Executando Manualmente
+### Executando Manualmente 🛠️
 
 1. **Inicie o MongoDB**:
 
@@ -102,7 +102,60 @@ Este projeto é uma API desenvolvida para gerenciar dados utilizando MongoDB com
    npm start
    ```
 
-## Estrutura do Projeto
+## Endpoints da API 🔗
+
+Abaixo estão listados os endpoints disponíveis na API e suas respectivas funcionalidades:
+
+### 1. **Inserir documento em uma coleção**
+
+- **Endpoint:** `POST /{collection_name}`
+- **Descrição:** Insere um documento na coleção especificada.
+- **Parâmetros:**
+  - `collection_name` (URL param): Nome da coleção.
+  - Corpo da requisição: JSON representando o documento a ser inserido.
+- **Respostas:**
+  - `201 Created`: Documento criado com sucesso.
+  - `400 Bad Request`: Erro de validação no corpo da requisição.
+
+### 2. **Buscar documentos de uma coleção**
+
+- **Endpoint:** `GET /{collection_name}`
+- **Descrição:** Busca documentos em uma coleção com suporte a filtros, projeção e paginação.
+- **Parâmetros:**
+  - `collection_name` (URL param): Nome da coleção.
+  - `query` (query param): Filtros em formato JSON (opcional).
+  - `fields` (query param): Campos a serem incluídos/excluídos na projeção (opcional).
+  - `skip` (query param): Número de documentos a pular (opcional).
+  - `limit` (query param): Número máximo de documentos a retornar (opcional).
+- **Respostas:**
+  - `200 OK`: Lista de documentos retornados.
+  - `400 Bad Request`: Erro de validação nos parâmetros.
+
+### 3. **Buscar documento por ID**
+
+- **Endpoint:** `GET /{collection_name}/{id}`
+- **Descrição:** Busca um documento específico por ID em uma coleção.
+- **Parâmetros:**
+  - `collection_name` (URL param): Nome da coleção.
+  - `id` (URL param): ID do documento a ser buscado.
+- **Respostas:**
+  - `200 OK`: Documento encontrado.
+  - `404 Not Found`: Documento não encontrado.
+
+### 4. **Atualizar documento por ID**
+
+- **Endpoint:** `PUT /{collection_name}/{id}`
+- **Descrição:** Atualiza um documento específico por ID em uma coleção.
+- **Parâmetros:**
+  - `collection_name` (URL param): Nome da coleção.
+  - `id` (URL param): ID do documento a ser atualizado.
+  - Corpo da requisição: JSON representando os dados atualizados.
+- **Respostas:**
+  - `200 OK`: Documento atualizado com sucesso.
+  - `400 Bad Request`: Erro de validação no corpo da requisição.
+  - `404 Not Found`: Documento não encontrado.
+
+## Estrutura do Projeto 🗂️
 
 - **src/**: Contém o código-fonte da aplicação.
 - **Dockerfile**: Configuração para criar uma imagem Docker da aplicação.
