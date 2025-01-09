@@ -30,8 +30,8 @@ Este projeto é uma API desenvolvida para gerenciar dados utilizando MongoDB com
       para ajustar as variáveis conforme necessário:
 
      ```env
-     PORT=3000
-     MONGO_URI=mongodb://mongo:27017/seu_banco_de_dados
+      MONGO_URI=mongodb://localhost:27017
+      MONGO_DB_NAME=db
      ```
 
 ## Execução do Projeto
